@@ -1,0 +1,62 @@
+# ================================
+# Project Configuration
+# ================================
+
+project:
+  name: churn_prediction
+  version: 1.0
+
+# ================================
+# Data Configuration
+# ================================
+
+data:
+  raw_data_path: data/raw/telco_customer_churn.csv
+  target_column: Churn
+
+# ================================
+# Model Configuration
+# ================================
+
+model:
+  name: logistic_regression
+  params:
+    penalty: l2
+    C: 100
+    solver: lbfgs
+    class_weight: balanced
+    max_iter: 1000
+
+# ================================
+# Threshold Configuration
+# ================================
+
+threshold:
+  value: 0.35
+
+# ================================
+# Evaluation Metrics
+# ================================
+
+metrics:
+  primary: recall
+  secondary:
+    - precision
+    - roc_auc
+
+# ================================
+# Drift Monitoring (future use)
+# ================================
+
+drift:
+  enabled: true
+  method: psi
+  psi_threshold: 0.2
+
+# ================================
+# Retraining (future use)
+# ================================
+
+retraining:
+  enabled: false
+  min_data_points: 5000

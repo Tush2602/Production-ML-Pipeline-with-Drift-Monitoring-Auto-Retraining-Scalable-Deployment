@@ -1,0 +1,26 @@
+#Python image
+FROM python:3.10-slim
+
+#set working directory
+WORKDIR /app
+
+#Preventing python from writing pyc files and enable logs
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+#Copy requirements 
+COPY requirements.txt .
+
+#Install python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+#Copy project code
+COPY . . 
+
+#Expose FastAPI Port
+EXPOSE 8000
+
+#Start fastAPI 
+CMD ["python", "-m", "uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
