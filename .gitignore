@@ -22,13 +22,6 @@ logs/
 *.log
 
 # ===============================
-# Data Artifacts (generated)
-# ===============================
-data/processed/
-data/artifacts/
-data/drift/
-
-# ===============================
 # Jupyter
 # ===============================
 .ipynb_checkpoints/
