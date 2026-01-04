@@ -11,3 +11,4 @@ pyyaml
 pydantic
 scipy
 uvicorn
+mlflow

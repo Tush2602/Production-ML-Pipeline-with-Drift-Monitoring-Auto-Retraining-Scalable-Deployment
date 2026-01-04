@@ -15,6 +15,10 @@ from src.preprocessing import DataPreprocessing
 #importing models
 from sklearn.linear_model import LogisticRegression
 
+#mlflow 
+import mlflow
+import mlflow.sklearn
+
 logger = get_logger(__name__)
 
 class ModelTrainer:
@@ -36,10 +40,26 @@ class ModelTrainer:
 
             logger.info("Target variable encoded successfully.")
 
-            #Training Model
-            self.model.fit(X_train, y_train_encoded)
+            with mlflow.start_run(run_name="churn_model_training"):
 
-            logger.info("Model Training Completed")
+                #Log model parameters
+                mlflow.log_param("model_type", "LogisticRegression")
+                mlflow.log_param("C", self.model.C)
+                mlflow.log_param("class_weight", self.model.class_weight)
+                mlflow.log_param("solver", self.model.solver)
+                mlflow.log_param("max_iter", self.model.max_iter)
+
+                #Log data properties
+                mlflow.log_param("train_samples", X_train.shape[0])
+                mlflow.log_param("num_features", X_train.shape[1])
+
+                #Training Model
+                self.model.fit(X_train, y_train_encoded)
+
+                logger.info("Model Training Completed")
+
+                #Log model to MLflow
+                mlflow.sklearn.log_model(self.model, artifact_path = "model")
 
             #Saving model to local
             model_path = os.path.join(ARTIFACT_DIR, "Churn_Model.pkl")

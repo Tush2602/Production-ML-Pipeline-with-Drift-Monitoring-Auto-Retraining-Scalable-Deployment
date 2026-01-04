@@ -1,15 +1,19 @@
 #importing library
 import sys
 import os
+import json
+import numpy as np
 import pandas as pd
 
 #importing requirements
 from src.utils.logger import get_logger
 from src.utils.exception import ChurnException
+from src.utils.common import load_object, save_json
 
 from src.monitoring.drift_detection import DataDriftDetector
 from src.pipeline.training_pipeline import TrainingPipeline
-from src.config.paths import PROCESSED_DATA_DIR, DRIFT_DATA_DIR
+from src.config.paths import PROCESSED_DATA_DIR, DRIFT_DATA_DIR, ARTIFACT_DIR
+
 
 logger = get_logger(__name__)
 
@@ -48,9 +52,17 @@ class RetrainingTrigger:
                 reference_df, current_df
             )
 
-            # 4. Trigger retraining if drift detected
+            confidence_degraded = is_confidence_degraded(current_df)
+
             if drift_result["drift_detected"]:
-                logger.warning("Data Drift Detected! Triggered Retraining.")
+                logger.warning("Data Drift Detected!")
+
+            if confidence_degraded:
+                logger.warning("Prediction confidence degraded!")
+
+            # 4. Trigger retraining if drift detected
+            if drift_result["drift_detected"] or confidence_degraded:
+                logger.warning("Triggered Retraining.")
 
                 training_pipeline =TrainingPipeline()
                 training_pipeline.run()
@@ -58,11 +70,48 @@ class RetrainingTrigger:
                 logger.info("✅ Model retraining completed successfully")
 
             else:
-                logger.info("✅ No significant drift detected. Retraining not required.")
+                logger.info("✅ No retraining conditions met. System healthy.")
 
         except Exception as e:
             logger.exception("Retraining trigger failed")
             raise ChurnException(e, sys)
+
+
+def compute_mean_confidence(probabilities: np.ndarray) -> float:
+    return float(np.mean(np.abs(probabilities - 0.5)))
+
+
+def is_confidence_degraded(current_df: pd.DataFrame, threshold: float = 0.15) -> bool:
+    confidence_path = os.path.join(ARTIFACT_DIR, "confidence_baseline.json")
+
+    # No baseline yet → cannot judge degradation
+    if not os.path.exists(confidence_path):
+        logger.info("No confidence baseline found. Skipping confidence check.")
+        return False
+
+    # Load baseline
+    with open(confidence_path, "r") as f:
+        baseline = json.load(f)
+
+    # Load model & preprocessor
+    model = load_object(os.path.join(ARTIFACT_DIR, "Churn_Model.pkl"))
+    preprocessor = load_object(os.path.join(ARTIFACT_DIR, "preprocessor.pkl"))
+
+    # Prepare data
+    X_current = preprocessor.transform(current_df)
+
+    # Predict probabilities
+    probs = model.predict_proba(X_current)[:, 1]
+
+    current_confidence = compute_mean_confidence(probs)
+    baseline_confidence = baseline["mean_confidence"]
+
+    logger.info(
+        f"Current confidence={current_confidence:.4f}, "
+        f"Baseline confidence={baseline_confidence:.4f}"
+    )
+    return current_confidence < (baseline_confidence * (1 - threshold))
+
 
 
 if __name__ == "__main__":

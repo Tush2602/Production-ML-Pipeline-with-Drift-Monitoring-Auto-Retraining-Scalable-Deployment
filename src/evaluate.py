@@ -58,11 +58,39 @@ class ModelEval:
             logger.info("Model evaluation completed successfully")
             logger.info(f"Evaluation metrics: {metrics}")
 
+            production_metrics_path = os.path.join(ARTIFACT_DIR, "production_metrics.json")
+
+            # If no production model exists, promote automatically
+            if not os.path.exists(production_metrics_path):
+                save_json(production_metrics_path, metrics)
+                logger.info("No production model found. Promoting candidate as production.")
+                return metrics_path, metrics
+
+            # Load existing production metrics
+            with open(production_metrics_path, "r") as f:
+                production_metrics = json.load(f)
+
+            # Compare models
+            if is_model_better(metrics, production_metrics):
+                save_json(production_metrics_path, metrics)
+                logger.info("Candidate model promoted to production.")
+            else:
+                logger.warning("Candidate model rejected. Production model retained.")
+
             return metrics_path, metrics
 
         except Exception as e :
             logger.exception("Failed to evaluate model !")
             raise ChurnException(e, sys)
+
+
+def is_model_better(candidate_metrics: dict, production_metrics: dict) -> bool:
+    return (
+        candidate_metrics["ROC-AUC score"] >= production_metrics["ROC-AUC score"]
+        and
+        candidate_metrics["recall score"] >= production_metrics["recall score"]
+    )
+
 
 if __name__ == "__main__":
     preprocessor = DataPreprocessing()
