@@ -36,7 +36,7 @@ Predict customer churn based on historical customer attributes to help businesse
 
 ## 🏗️ System Architecture
 
-![Production ML Pipeline Architecture](docs/architecture.jpg)
+![Production ML Pipeline Architecture](./docs/architechture.jpg)
 
 **High-level flow:**
 
