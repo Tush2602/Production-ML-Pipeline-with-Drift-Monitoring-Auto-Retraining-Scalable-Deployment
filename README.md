@@ -156,17 +156,26 @@ Raw Data → Training Pipeline → Model Artifacts → API Inference
 curl -X POST https://production-ml-pipeline-with-drift-txr3.onrender.com/predict \
 -H "Content-Type: application/json" \
 -d '{
-  "CreditScore": 650,
-  "Age": 35,
-  "Tenure": 5,
-  "Balance": 50000,
-  "NumOfProducts": 2,
-  "HasCrCard": 1,
-  "IsActiveMember": 1,
-  "EstimatedSalary": 60000,
-  "Geography": "France",
-  "Gender": "Male"
+  "SeniorCitizen": 0,
+  "Partner": "Yes",
+  "Dependents": "No",
+  "tenure": 12,
+  "PhoneService": "Yes",
+  "MultipleLines": "No",
+  "InternetService": "Fiber optic",
+  "OnlineSecurity": "No",
+  "OnlineBackup": "Yes",
+  "DeviceProtection": "No",
+  "TechSupport": "No",
+  "StreamingTV": "Yes",
+  "StreamingMovies": "Yes",
+  "Contract": "Month-to-month",
+  "PaperlessBilling": "Yes",
+  "PaymentMethod": "Electronic check",
+  "MonthlyCharges": 70.5,
+  "TotalCharges": 840.6
 }'
+
 ```
 
 ---
