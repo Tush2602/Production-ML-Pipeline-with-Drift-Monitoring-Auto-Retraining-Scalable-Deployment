@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Pipeline Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .layer {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .layer-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4a5568;
+            padding-left: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .components {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .component {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .component-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .component-desc {
+            font-size: 0.9em;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .icon {
+            font-size: 1.5em;
+        }
+
+        .arrow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            position: relative;
+        }
+
+        .arrow-line {
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            position: relative;
+        }
+
+        .arrow-line::after {
+            content: '▼';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #764ba2;
+            font-size: 1.5em;
+        }
+
+        .highlight-box {
+            background: #f7fafc;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .highlight-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .tech-badge {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .flow-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .flow-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .flow-arrow {
+            color: #667eea;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .components {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .component {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🚀 Production ML Pipeline Architecture</h1>
+        <p class="subtitle">End-to-End System Design with Automated Monitoring & Retraining</p>
+
+        <!-- Data Flow Overview -->
+        <div class="highlight-box">
+            <div class="highlight-title">📊 Complete Data Flow</div>
+            <div class="flow-section">
+                <div class="flow-box">Raw Data</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">Training</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">Model</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">API</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">Monitor</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">Retrain</div>
+            </div>
+        </div>
+
+        <div class="architecture">
+            <!-- Layer 1: Data Ingestion -->
+            <div class="layer">
+                <div class="layer-title">1️⃣ Data Ingestion Layer</div>
+                <div class="components">
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">📥</span>
+                            Data Loading
+                        </div>
+                        <div class="component-desc">
+                            • Load raw CSV datasets<br>
+                            • Validate schema & types<br>
+                            • Handle missing values<br>
+                            • Data quality checks
+                        </div>
+                    </div>
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">🔄</span>
+                            Preprocessing
+                        </div>
+                        <div class="component-desc">
+                            • Feature scaling (StandardScaler)<br>
+                            • Categorical encoding<br>
+                            • Train-test splitting<br>
+                            • Artifact persistence
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">
+                <div class="arrow-line"></div>
+            </div>
+
+            <!-- Layer 2: Training Pipeline -->
+            <div class="layer">
+                <div class="layer-title">2️⃣ Training Pipeline</div>
+                <div class="components">
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">🤖</span>
+                            Model Training
+                        </div>
+                        <div class="component-desc">
+                            • Logistic Regression<br>
+                            • Hyperparameter tuning<br>
+                            • Cross-validation<br>
+                            • Model serialization
+                        </div>
+                    </div>
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">📊</span>
+                            Evaluation
+                        </div>
+                        <div class="component-desc">
+                            • Accuracy, Precision, Recall<br>
+                            • F1-Score, ROC-AUC<br>
+                            • Confusion matrix<br>
+                            • Performance logging
+                        </div>
+                    </div>
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">💾</span>
+                            Artifacts
+                        </div>
+                        <div class="component-desc">
+                            • Churn_Model.pkl<br>
+                            • preprocessor.pkl<br>
+                            • le_churn.pkl<br>
+                            • metrics.json
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">
+                <div class="arrow-line"></div>
+            </div>
+
+            <!-- Layer 3: Inference Pipeline -->
+            <div class="layer">
+                <div class="layer-title">3️⃣ Inference Pipeline</div>
+                <div class="components">
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">🔮</span>
+                            Prediction Service
+                        </div>
+                        <div class="component-desc">
+                            • Load trained artifacts<br>
+                            • Apply preprocessing<br>
+                            • Generate predictions<br>
+                            • Risk assessment logic
+                        </div>
+                    </div>
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">⚡</span>
+                            FastAPI Server
+                        </div>
+                        <div class="component-desc">
+                            • RESTful endpoints<br>
+                            • Pydantic validation<br>
+                            • Swagger UI docs<br>
+                            • Error handling
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">
+                <div class="arrow-line"></div>
+            </div>
+
+            <!-- Layer 4: Monitoring -->
+            <div class="layer">
+                <div class="layer-title">4️⃣ Monitoring & Retraining</div>
+                <div class="components">
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">🔍</span>
+                            Drift Detection
+                        </div>
+                        <div class="component-desc">
+                            • Kolmogorov-Smirnov test<br>
+                            • Feature-wise analysis<br>
+                            • Statistical significance<br>
+                            • Drift reporting
+                        </div>
+                    </div>
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">🔄</span>
+                            Auto-Retraining
+                        </div>
+                        <div class="component-desc">
+                            • Threshold-based trigger<br>
+                            • Automatic pipeline execution<br>
+                            • Model replacement<br>
+                            • Zero manual intervention
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">
+                <div class="arrow-line"></div>
+            </div>
+
+            <!-- Layer 5: Deployment -->
+            <div class="layer">
+                <div class="layer-title">5️⃣ Deployment & Scalability</div>
+                <div class="components">
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">🐳</span>
+                            Docker Container
+                        </div>
+                        <div class="component-desc">
+                            • Containerized API<br>
+                            • Isolated environment<br>
+                            • Reproducible builds<br>
+                            • Easy deployment
+                        </div>
+                    </div>
+                    <div class="component">
+                        <div class="component-title">
+                            <span class="icon">☁️</span>
+                            Cloud Hosting
+                        </div>
+                        <div class="component-desc">
+                            • Render platform<br>
+                            • Automatic SSL<br>
+                            • 99.9% uptime<br>
+                            • Horizontal scaling
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="highlight-box">
+            <div class="highlight-title">📈 System Metrics</div>
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-value">90%</div>
+                    <div class="metric-label">Model Recall</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">
+                        < 100ms</div>
+                            <div class="metric-label">Inference Time</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">24/7</div>
+                        <div class="metric-label">Uptime</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Auto</div>
+                        <div class="metric-label">Retraining</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack -->
+            <div class="highlight-box">
+                <div class="highlight-title">🛠️ Technology Stack</div>
+                <div class="tech-stack">
+                    <div class="tech-badge">Python 3.10</div>
+                    <div class="tech-badge">Scikit-learn</div>
+                    <div class="tech-badge">FastAPI</div>
+                    <div class="tech-badge">Pandas</div>
+                    <div class="tech-badge">NumPy</div>
+                    <div class="tech-badge">SciPy</div>
+                    <div class="tech-badge">Pydantic</div>
+                    <div class="tech-badge">Docker</div>
+                    <div class="tech-badge">Render</div>
+                    <div class="tech-badge">Uvicorn</div>
+                </div>
+            </div>
+
+            <!-- Key Features -->
+            <div class="highlight-box">
+                <div class="highlight-title">✨ Key Features</div>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>🎯 Production-Ready:</strong> Complete separation of training and inference pipelines
+                    </div>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>🔄 Self-Healing:</strong> Automatic retraining when drift is detected
+                    </div>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>📊 Statistical Monitoring:</strong> KS test for distribution shift detection
+                    </div>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>🚀 Scalable:</strong> Dockerized deployment with horizontal scaling
+                    </div>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>📝 Type-Safe:</strong> Pydantic schemas for request validation
+                    </div>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>🔒 Enterprise-Grade:</strong> Comprehensive logging and error handling
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

@@ -1,244 +1,255 @@
-You’re absolutely right — thanks for calling it out 👍
-Below is a **final, complete, recruiter-grade README** with the **three missing pieces properly added**:
 
-* ✅ **Folder structure (clear + readable)**
-* ✅ **Tech stack (explicit, scannable)**
-* ✅ **How to run (local, end-to-end)**
-
-This version is **sharp, concise, and resume-optimized**.
-You can paste it **directly** into your GitHub repo.
+# 🚀 Production ML Pipeline with Drift Monitoring & Auto-Retraining
+> **A production-oriented machine learning system** demonstrating the complete ML lifecycle — training, inference, monitoring, drift detection, and automated retraining — deployed as a live FastAPI service.
 
 ---
 
-# 🚀 Production ML Pipeline with Drift Monitoring, Safe Promotion & Smart Auto-Retraining
+## 🌐 Live Deployment
 
-> **A production-grade Machine Learning system focused on model reliability after deployment — not just training accuracy.**
+* **API Base URL:**
+  👉 [https://production-ml-pipeline-with-drift-txr3.onrender.com](https://production-ml-pipeline-with-drift-txr3.onrender.com)
 
-This project demonstrates how real ML systems are built and maintained in production:
-with **monitoring, safe model promotion, and intelligent retraining**, instead of blindly overwriting models.
+* **Swagger Docs:**
+  👉 [https://production-ml-pipeline-with-drift-txr3.onrender.com/docs](https://production-ml-pipeline-with-drift-txr3.onrender.com/docs)
 
----
-
-## 🔍 Problem Statement
-
-Customer churn models degrade over time due to:
-
-* **Data drift** (changing customer behavior)
-* **Silent performance decay** (model becomes less confident even when distributions look stable)
-
-Most ML projects ignore this and overwrite models blindly.
-**This system does not.**
+> ⚠️ Hosted on Render free tier — initial requests may experience cold start latency.
 
 ---
 
-## 🧠 Key Design Philosophy
+## 🎯 Project Overview
 
-> **ML is a lifecycle problem, not a training task.**
+This project focuses on **production ML engineering**, not just model training.
 
-This project emphasizes:
+It demonstrates how a real-world ML system should be designed:
 
-* Post-deployment monitoring
-* Controlled model promotion
-* Decision-driven retraining
-* Explainability and auditability
+* Clear separation between **training and inference**
+* Continuous **model monitoring**
+* **Statistical drift detection**
+* Automated **retraining triggers**
+* Scalable **API deployment**
+
+### Business Problem
+
+Predict customer churn based on historical customer attributes to help businesses proactively retain high-risk customers.
 
 ---
 
-## 🏗️ Project Architecture (High Level)
+## 🏗️ System Architecture
+
+![Production ML Pipeline Architecture](docs/architecture.png)
+
+**High-level flow:**
 
 ```
-Raw Data
-  ↓
-Data Ingestion & Preprocessing
-  ↓
-Model Training (MLflow tracked)
-  ↓
-Evaluation & Metrics
-  ↓
-Safe Model Promotion
-  ↓
-Production Inference
-  ↓
-Monitoring
-   ├─ Data Drift Detection
-   └─ Prediction Confidence Monitoring
-  ↓
-Smart Auto-Retraining
+Raw Data → Training Pipeline → Model Artifacts → API Inference
+                               ↓
+                        Drift Monitoring
+                               ↓
+                        Auto Retraining
 ```
 
 ---
 
-## 📁 Folder Structure
+## 🧠 Key Capabilities
+
+* ✅ End-to-end ML pipeline (data → model → deployment)
+* ✅ Modular training and inference pipelines
+* ✅ Statistical drift detection (Kolmogorov-Smirnov test)
+* ✅ Threshold-based auto-retraining logic
+* ✅ FastAPI inference service
+* ✅ Dockerized deployment
+* ✅ Centralized logging & error handling
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer           | Tools             |
+| --------------- | ----------------- |
+| ML              | Scikit-learn      |
+| API             | FastAPI, Pydantic |
+| Data            | Pandas, NumPy     |
+| Drift Detection | SciPy (KS Test)   |
+| Deployment      | Docker, Render    |
+| Language        | Python 3.10       |
+
+---
+
+## 📁 Project Structure
 
 ```
-Production-ML-Pipeline/
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   ├── artifacts/          # Trained model & preprocessors
+│   └── drift/              # Baseline & current data
 │
 ├── src/
-│   ├── api/
-│   │   └── app.py                  # FastAPI inference API
-│   │
-│   ├── config/
-│   │   └── paths.py                # Centralized path management
-│   │
-│   ├── monitoring/
-│   │   ├── drift_detection.py      # KS-test based data drift detection
-│   │   └── retraining_trigger.py   # Drift + confidence based retraining logic
-│   │
-│   ├── pipeline/
-│   │   └── training_pipeline.py    # Orchestrates ingestion → train → eval
-│   │
-│   ├── utils/
-│   │   ├── logger.py               # Central logging
-│   │   ├── exception.py            # Custom exception handling
-│   │   └── common.py               # Metrics, save/load utilities
-│   │
-│   ├── preprocessing.py            # Data cleaning & feature pipeline
-│   ├── train.py                    # Model training (MLflow tracked)
-│   ├── evaluate.py                 # Evaluation + safe promotion
-│   └── predict.py                  # Batch prediction logic
+│   ├── api/                # FastAPI app
+│   ├── pipeline/           # Training & inference pipelines
+│   ├── monitoring/         # Drift detection & retraining
+│   ├── config/             # Paths & configs
+│   ├── utils/              # Logger & custom exceptions
+│   ├── data_ingestion.py
+│   ├── preprocessing.py
+│   ├── train.py
+│   └── evaluate.py
 │
-├── data/
-│   ├── raw/                        # Raw dataset
-│   ├── processed/                 # Train/test splits
-│   ├── drift/                     # Incoming inference data
-│   └── artifacts/                 # Models, metrics, baselines
+├── docker/
+│   └── Dockerfile.api
 │
-├── logs/                           # Execution logs
-├── mlruns/                         # MLflow experiment tracking (gitignored)
-├── Dockerfile                     # Containerization
+├── docs/
+│   ├── architecture.jpg
+│   └── architecture.html
+│
 ├── requirements.txt
+├── pyproject.toml
 └── README.md
 ```
 
 ---
 
-## ⚙️ Tech Stack
+## 🔁 ML Pipeline Breakdown
 
-### **Machine Learning**
+### 1️⃣ Data Ingestion
 
-* Scikit-learn
-* Logistic Regression (class-imbalanced learning)
-* Custom threshold optimization
+* Load raw CSV data
+* Handle missing values
+* Schema & type validation
+* Train-test split
 
-### **MLOps / Production**
+### 2️⃣ Preprocessing
 
-* MLflow (experiment tracking & model artifacts)
-* Data drift detection (Kolmogorov–Smirnov test)
-* Safe model promotion logic
-* Confidence-based retraining triggers
+* Numerical scaling (StandardScaler)
+* Categorical encoding
+* Artifact persistence for inference consistency
 
-### **Backend & Deployment**
+### 3️⃣ Model Training
 
-* FastAPI (model serving)
-* Docker (containerization)
+* Logistic Regression classifier
+* Hyperparameter configuration
+* Model serialization (`.pkl`)
 
-### **Data & Utilities**
+### 4️⃣ Evaluation
 
-* Pandas, NumPy
-* SciPy
-* JSON-based artifact contracts
-* Structured logging
-
----
-
-## 🧪 Model & Metrics
-
-* **Algorithm:** Logistic Regression
-* **Imbalance handling:** `class_weight="balanced"`
-* **Decision threshold:** Custom (optimized for recall)
-
-### Metrics Tracked
-
-* ROC-AUC
-* Recall
-* Precision
-* F1-Score
+* Accuracy, Precision, Recall
+* F1-Score, ROC-AUC
+* Confusion matrix
 
 ---
 
-## 🛡️ Safe Model Promotion (Key Feature)
+## ⚡ Inference Pipeline
 
-* Every new model is treated as a **candidate**
-* Compared against **current production baseline**
-* Promoted **only if**:
+* Stateless prediction service
+* Loads trained artifacts once
+* Applies identical preprocessing
+* Returns:
 
-  * ROC-AUC improves
-  * Recall does not degrade
-* Prevents silent regressions in production
+  * Churn probability
+  * Churn label
+  * Risk level
+  * Confidence score
 
-Artifacts used:
-
-* `metrics.json` → candidate model
-* `production_metrics.json` → production contract
-
----
-
-## 📉 Prediction Confidence Monitoring
-
-In addition to drift detection, the system monitors **prediction confidence**:
-
-[
-\text{confidence} = |p - 0.5|
-]
-
-* Detects **silent degradation**
-* Works **without ground-truth labels**
-* Retraining triggered if confidence drops beyond a safe threshold
-
----
-
-## 🔁 Smart Auto-Retraining Logic
-
-```text
-IF (data drift detected)
-OR (prediction confidence degraded)
-→ retrain model
-```
-
-Retraining is **decision-based**, not schedule-based.
-
----
-
-## 🚀 How to Run (Local)
-
-### 1️⃣ Install dependencies
+### Sample Request
 
 ```bash
+curl -X POST https://production-ml-pipeline-with-drift-txr3.onrender.com/predict \
+-H "Content-Type: application/json" \
+-d '{
+  "CreditScore": 650,
+  "Age": 35,
+  "Tenure": 5,
+  "Balance": 50000,
+  "NumOfProducts": 2,
+  "HasCrCard": 1,
+  "IsActiveMember": 1,
+  "EstimatedSalary": 60000,
+  "Geography": "France",
+  "Gender": "Male"
+}'
+```
+
+---
+
+## 📉 Drift Detection
+
+* Uses **Kolmogorov-Smirnov (KS) Test**
+* Compares:
+
+  * Training baseline data
+  * Recent inference data
+* Feature-wise statistical testing
+* Drift flagged when `p-value < 0.05`
+
+---
+
+## 🔄 Auto-Retraining Logic
+
+When drift is detected:
+
+1. Validate new data
+2. Re-execute training pipeline
+3. Evaluate new model
+4. Replace old artifacts if performance improves
+5. Log retraining event
+
+> Goal: **Keep the deployed model reliable over time without manual intervention**
+
+---
+
+## 🐳 Deployment
+
+* Dockerized FastAPI service
+* Stateless API design
+* Cloud hosted on Render
+* HTTPS enabled by default
+
+---
+
+## 🚀 Local Setup
+
+```bash
+git clone https://github.com/Tush2602/Production-ML-Pipeline-with-Drift-Monitoring-Auto-Retraining-Scalable-Deployment.git
+cd Production-ML-Pipeline-with-Drift-Monitoring-Auto-Retraining-Scalable-Deployment
+
 pip install -r requirements.txt
-```
-
-### 2️⃣ Train the model (MLflow tracked)
-
-```bash
-python -m src.train
-```
-
-### 3️⃣ Evaluate & promote safely
-
-```bash
-python -m src.evaluate
-```
-
-### 4️⃣ Run monitoring & retraining trigger
-
-```bash
-python -m src.monitoring.retraining_trigger
-```
-
-### 5️⃣ Start inference API
-
-```bash
 uvicorn src.api.app:app --reload
 ```
 
+Swagger UI:
+
+```
+http://localhost:8000/docs
+```
 
 ---
 
-## 🎯 Skills Demonstrated
+## 🔮 Future Improvements
 
-* Production ML system design
-* Model lifecycle management
-* Drift & confidence monitoring
-* Safe promotion strategies
-* MLflow experiment tracking
-* Clean, modular Python engineering
+* MLflow experiment tracking & model registry
+* CI/CD with GitHub Actions
+* Unit testing with pytest
+* Monitoring dashboards (Grafana)
+* Kubernetes deployment
+* Model explainability (SHAP)
+
+---
+
+## 👨‍💻 Author
+
+**Tushar Joshi**
+B.Tech Electrical Engineering, PEC Chandigarh
+Aspiring ML / Data Scientist with strong interest in production ML systems
+
+* GitHub: [https://github.com/Tush2602](https://github.com/Tush2602)
+* LinkedIn: [https://www.linkedin.com/in/tushar-joshi-47a5a9311](https://www.linkedin.com/in/tushar-joshi-47a5a9311)
+
+---
+
+## ⭐ Support
+
+If this project helped you or inspired you, consider giving it a ⭐
+It helps others discover production-ready ML system design patterns.
+
+---
+
